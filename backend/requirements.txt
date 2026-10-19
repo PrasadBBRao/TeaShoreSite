@@ -1,7 +1,18 @@
+# Teashore backend — pinned dependency versions.
+# All versions use == (not >=) so a fresh install 6 months from now
+# produces an identical environment without silent breaking updates.
+# To upgrade a dependency: test locally, update the pinned version here,
+# generate a new Alembic migration if the schema changes, then redeploy.
+
 fastapi==0.115.5
 uvicorn==0.32.1
 sqlalchemy==2.0.36
 psycopg2-binary==2.9.10
 python-dotenv==1.0.1
 passlib==1.7.4
+bcrypt==4.0.1
 python-jose==3.3.0
+python-multipart==0.0.9
+alembic==1.14.0
+pydantic==2.10.6
+reportlab==5.0.1

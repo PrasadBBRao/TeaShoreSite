@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
+  <title id="title">Makhana snack bowl</title>
+  <desc id="desc">A warm illustrated bowl of roasted makhana fox nuts.</desc>
+  <rect width="800" height="600" fill="#ead4b8"/>
+  <circle cx="650" cy="100" r="150" fill="#f4e3cc" opacity=".65"/>
+  <circle cx="120" cy="510" r="180" fill="#d2ad82" opacity=".28"/>
+  <ellipse cx="400" cy="390" rx="245" ry="95" fill="#6b4d38"/>
+  <path d="M165 375h470l-35 135c-15 58-88 78-200 78s-185-20-200-78z" fill="#9b6849"/>
+  <ellipse cx="400" cy="374" rx="245" ry="88" fill="#c58e5e"/>
+  <g fill="#f8e7c9" stroke="#9c6b48" stroke-width="7">
+    <circle cx="275" cy="355" r="40"/><circle cx="345" cy="330" r="45"/><circle cx="430" cy="350" r="42"/><circle cx="510" cy="330" r="44"/><circle cx="230" cy="395" r="38"/><circle cx="320" cy="405" r="43"/><circle cx="410" cy="405" r="40"/><circle cx="500" cy="400" r="39"/><circle cx="565" cy="380" r="34"/>
+  </g>
+  <g fill="none" stroke="#d29b67" stroke-width="6" stroke-linecap="round" opacity=".8">
+    <path d="M258 350l18 10m55-33l20 12m62-4l18 11m61-19l20 11m-272 74l20 8m61 2l18 9m70-9l18 9m62-18l17 8"/>
+  </g>
+</svg>

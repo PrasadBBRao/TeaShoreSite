@@ -1,3 +1,200 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Suppress browser-native password reveal/eye buttons globally ─────────
+   Chrome, Edge, Safari all inject their own eye icon into type=password
+   fields. This removes it so only our custom eye button is visible.        */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+}
+/* Chrome 100+ reveal button */
+input[type="password"]::-webkit-textfield-decoration-container {
+  direction: rtl;
+}
+::-webkit-password-eye-icon {
+  display: none !important;
+}
+
+@media (min-width: 768px) {
+  .menu-scroll-row {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .menu-scroll-row::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .mobile-bottom-safe-area {
+    padding-bottom: 5.5rem;
+  }
+}
+
+/* ── Admin panel scrollbar ────────────────────────────────────────────────
+   Matches the Menu page scroll-progress bar design language:
+     • 6 px thick  (matches h-1.5 / 6px of the Menu progress bar)
+     • fully rounded ends  (matches rounded-full)
+     • gradient thumb: amber-accent-light → amber-accent → amber-accent-dark
+       (#f0b56e → #c68b59 → #a06a38), mirroring the Menu's
+       from-palm-brown via-palm-brown to-amber-accent wave
+     • track: dark brown #2e1f15 at ~80% opacity — dark-theme equivalent of
+       the Menu's cream-dark/80 track
+     • hover: thumb lightens to #f0b56e for feedback
+   Applied to .admin-scroll — used on the sidebar and main content area.   */
+
+.admin-scroll {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #34483D rgba(228, 230, 222, 0.8);
+}
+
+.admin-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.admin-scroll::-webkit-scrollbar-track {
+  background: rgba(228, 230, 222, 0.8);
+  border-radius: 9999px;
+}
+
+.admin-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4A6358 0%, #34483D 55%, #26372E 100%);
+  border-radius: 9999px;
+  border: 1px solid rgba(228, 230, 222, 0.4);
+}
+
+.admin-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #4A6358 0%, #34483D 100%);
+}
+
+.admin-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+@media (min-width: 768px) {
+  .menu-scroll-row {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .menu-scroll-row::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .mobile-bottom-safe-area {
+    padding-bottom: 5.5rem;
+  }
+}
+
+/* ── Base resets ──────────────────────────────────────────────────────────── */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  /* Offset fixed navbar when scrolling to in-page sections */
+  [id="home"],
+  [id="menu"],
+  [id="orders"],
+  [id="reservation"],
+  [id="about"],
+  [id="contact"] {
+    scroll-margin-top: 5rem;
+  }
+
+  body {
+    @apply bg-cream font-sans text-palm-brown antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif text-palm-brown;
+  }
+}
+
+@layer components {
+  .font-menu {
+    font-family: "Cormorant Garamond", "Playfair Display", serif !important;
+    font-weight: 700 !important;
+  }
+
+  .marquee-track {
+    animation: marquee 28s linear infinite;
+  }
+
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+
+
+  /* Primary button — amber gradient pill */
+  .btn-primary {
+    @apply inline-flex items-center justify-center
+           px-8 py-3
+           rounded-btn
+           bg-btn-gradient
+           text-cream-light font-sans font-semibold text-base
+           tracking-wide
+           shadow-md
+           transition-all duration-300
+           hover:shadow-lg hover:scale-[1.03]
+           active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-accent;
+  }
+
+  /* Secondary button — outlined */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center
+           px-8 py-3
+           rounded-btn
+           border-2 border-palm-brown
+           text-palm-brown font-sans font-semibold text-base
+           tracking-wide
+           bg-transparent
+           transition-all duration-300
+           hover:bg-palm-brown hover:text-cream
+           active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palm-brown;
+  }
+
+  /* Card surface */
+  .card {
+    @apply bg-cream-light
+           rounded-card
+           shadow-card
+           border border-cream-dark
+           transition-shadow duration-300
+           hover:shadow-card-hover;
+  }
+
+  /* Nav link */
+  .nav-link {
+    @apply font-sans text-sm font-medium text-palm-brown
+           relative pb-0.5
+           after:absolute after:bottom-0 after:left-0
+           after:h-[1.5px] after:w-0 after:bg-amber-accent
+           after:transition-all after:duration-300
+           hover:after:w-full hover:text-amber-accent-dark
+           transition-colors duration-200;
+  }
+}

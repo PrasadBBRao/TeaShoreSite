@@ -21,3 +21,14 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# Kiro IDE tooling — local only, not application code
+.freebuff/
+backend/.agents/
+backend/skills-lock.json
+
+# Vite dependency pre-bundle cache — regenerated automatically
+.vite/
+
+# Scratch / temporary working directories
+tempimages/
