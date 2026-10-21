@@ -106,3 +106,87 @@ describe('apiFetchRaw — never throws', () => {
     expect(result.body).toBeNull();
   });
 });
+
+// ── T-BASE: BASE URL construction ─────────────────────────────────────────
+//
+// BASE is a module-level constant derived from import.meta.env.VITE_API_BASE_URL
+// at import time.  To test different values we must:
+//   1. vi.stubEnv()  — set the env var before the module loads
+//   2. vi.resetModules() — discard the cached module so it re-evaluates BASE
+//   3. dynamic import() — load the fresh module with the new BASE value
+//   4. vi.unstubAllEnvs() + vi.resetModules() in afterEach — clean up
+//
+// fetch is stubbed to a no-op so these tests never hit the network.
+
+describe('BASE URL construction', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({}),
+    }));
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+    vi.resetModules();
+  });
+
+  it('T-BASE-1: no VITE_API_BASE_URL → fetch uses /api/<path> (dev proxy)', async () => {
+    vi.stubEnv('VITE_API_BASE_URL', '');
+    vi.resetModules();
+    const { apiFetch: apiFetchFresh } = await import('../lib/api');
+
+    await apiFetchFresh('/menu').catch(() => {});
+    expect(fetch).toHaveBeenCalledOnce();
+    const calledUrl = fetch.mock.calls[0][0];
+    expect(calledUrl).toBe('/api/menu');
+  });
+
+  it('T-BASE-2: VITE_API_BASE_URL set → fetch uses the Railway root URL directly', async () => {
+    vi.stubEnv('VITE_API_BASE_URL', 'https://teashoresite-production.up.railway.app');
+    vi.resetModules();
+    const { apiFetch: apiFetchFresh } = await import('../lib/api');
+
+    await apiFetchFresh('/menu').catch(() => {});
+    expect(fetch).toHaveBeenCalledOnce();
+    const calledUrl = fetch.mock.calls[0][0];
+    expect(calledUrl).toBe('https://teashoresite-production.up.railway.app/menu');
+  });
+
+  it('T-BASE-3: VITE_API_BASE_URL with trailing slash → slash is stripped', async () => {
+    vi.stubEnv('VITE_API_BASE_URL', 'https://teashoresite-production.up.railway.app/');
+    vi.resetModules();
+    const { apiFetch: apiFetchFresh } = await import('../lib/api');
+
+    await apiFetchFresh('/orders').catch(() => {});
+    const calledUrl = fetch.mock.calls[0][0];
+    // Must NOT produce double-slash or extra /api segment
+    expect(calledUrl).toBe('https://teashoresite-production.up.railway.app/orders');
+    expect(calledUrl).not.toContain('//orders');
+    expect(calledUrl).not.toContain('/api/');
+  });
+
+  it('T-BASE-4: production URL never contains /api/ segment', async () => {
+    vi.stubEnv('VITE_API_BASE_URL', 'https://teashoresite-production.up.railway.app');
+    vi.resetModules();
+    const { apiFetch: apiFetchFresh } = await import('../lib/api');
+
+    await apiFetchFresh('/menu/categories').catch(() => {});
+    const calledUrl = fetch.mock.calls[0][0];
+    expect(calledUrl).not.toContain('/api/');
+    expect(calledUrl).toBe('https://teashoresite-production.up.railway.app/menu/categories');
+  });
+
+  it('T-BASE-5: dev fallback never uses a full URL (stays relative)', async () => {
+    vi.stubEnv('VITE_API_BASE_URL', '');
+    vi.resetModules();
+    const { apiFetch: apiFetchFresh } = await import('../lib/api');
+
+    await apiFetchFresh('/qr/scan').catch(() => {});
+    const calledUrl = fetch.mock.calls[0][0];
+    expect(calledUrl).toBe('/api/qr/scan');
+    expect(calledUrl).not.toMatch(/^https?:\/\//);
+  });
+});

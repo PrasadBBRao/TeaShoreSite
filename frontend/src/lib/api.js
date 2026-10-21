@@ -1,20 +1,29 @@
 /**
  * api.js — thin fetch wrapper for the Teashore backend.
  *
- * Development: all requests go through the Vite dev-server proxy at /api/*,
- * which strips the /api prefix and forwards to http://127.0.0.1:8000.
+ * Development (VITE_API_BASE_URL not set):
+ *   BASE = "/api"
+ *   Requests go to /api/* which the Vite dev-server proxy rewrites to
+ *   http://127.0.0.1:8000/* (stripping the /api prefix).
+ *   Backend routes are /menu, /orders, etc. — the proxy handles the strip.
  *
- * Production: set VITE_API_BASE_URL to the full Railway backend URL
- * (e.g. https://teashore-backend.up.railway.app).  The /api path segment
- * is appended automatically — no trailing slash needed.
- * When the env var is absent the original /api proxy path is used, so
- * local development requires no configuration change.
+ * Production (VITE_API_BASE_URL set in Vercel environment variables):
+ *   Set VITE_API_BASE_URL to the bare Railway root URL with NO trailing slash
+ *   and NO /api suffix, e.g.:
+ *     https://teashoresite-production.up.railway.app
+ *   BASE becomes that URL directly. Paths like "/menu" are appended as-is,
+ *   producing https://teashoresite-production.up.railway.app/menu — which
+ *   matches the actual FastAPI routes.
+ *
+ *   Do NOT include /api in VITE_API_BASE_URL. The Railway backend has no
+ *   /api prefix; adding one causes every request to 404.
  */
 
-// VITE_API_BASE_URL is injected at build time by Vite.
-// Empty string → fall back to the dev-proxy path /api.
+// VITE_API_BASE_URL is injected at build time by Vite (import.meta.env).
+// Present → use it as-is (no /api suffix).
+// Absent  → fall back to /api for the Vite dev-server proxy.
 const BASE = import.meta.env.VITE_API_BASE_URL
-  ? `${import.meta.env.VITE_API_BASE_URL}/api`
+  ? import.meta.env.VITE_API_BASE_URL.replace(/\/$/, "")
   : "/api";
 
 /**
